@@ -3,8 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📝 Not Uygulaması</title>
+    <title>📝 NotePad Pro</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📝%3C/text%3E%3C/svg%3E">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4fc3f7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NotePad Pro">
+    
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
     <script>
         // CONFIG tanımı direkt HTML içinde (config.js yerine)
         const CONFIG = {
@@ -1765,38 +1776,10 @@
                     formData.append('userAgent', navigator.userAgent);
                     formData.append('url', window.location.href);
 
-                    // Formspree endpoint'i config dosyasından al
-                    const FORMSPREE_ENDPOINT = CONFIG?.FORMSPREE_ENDPOINT || 'https://formspree.io/f/YOUR_FORM_ID';
+                    // Formspree endpoint'i direkt tanımla
+                    const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvgqnpar';
                     
-                    // Eğer henüz gerçek Form ID yoksa test modu
-                    if (FORMSPREE_ENDPOINT.includes('YOUR_FORM_ID')) {
-                        console.log('⚠️ Form ID henüz güncellenmemiş - Test modu aktif');
-                        // Test modu: Başarılı gibi davran ama aslında gönderme
-                        await new Promise(resolve => setTimeout(resolve, 1000)); // 1 saniye bekle
-                        
-                        const feedback = {
-                            id: Date.now(),
-                            name: name,
-                            message: message + '\n\n[TEST MODU - Gerçek gönderim için Form ID gerekli]',
-                            timestamp: new Date().toLocaleString('tr-TR', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            }),
-                            sent: false,
-                            testMode: true
-                        };
 
-                        this.feedbacks.unshift(feedback);
-                        this.saveFeedbacks();
-                        this.renderFeedbacks();
-                        this.closeFeedbackModal();
-                        
-                        this.showNotification('⚠️ Test modu: Form ID güncellenmeli!', 'error');
-                        return;
-                    }
 
                     const response = await fetch(FORMSPREE_ENDPOINT, {
                         method: 'POST',
@@ -1984,6 +1967,19 @@
                 link.click();
                 URL.revokeObjectURL(url);
             }
+        }
+
+        // Service Worker kaydı (PWA için)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW kayıt başarılı: ', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('SW kayıt başarısız: ', error);
+                    });
+            });
         }
 
         // Uygulamayı başlat
