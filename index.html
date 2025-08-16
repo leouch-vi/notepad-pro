@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📝 Not Uygulaması</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📝%3C/text%3E%3C/svg%3E">
+    <script src="config.js"></script>
     <style>
         * {
             margin: 0;
@@ -509,12 +510,46 @@
         .feedback-date {
             color: #888;
             font-size: 12px;
+            margin-top: 10px;
         }
 
         .feedback-message {
             color: #f0f0f0;
             line-height: 1.6;
             word-wrap: break-word;
+            margin: 10px 0;
+        }
+
+        .feedback-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-sent .feedback-status {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status-pending .feedback-status {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .status-local .feedback-status {
+            background: rgba(158, 158, 158, 0.2);
+            color: #9e9e9e;
+            border: 1px solid rgba(158, 158, 158, 0.3);
+        }
+
+        .status-test .feedback-status {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+            border: 1px solid rgba(255, 152, 0, 0.3);
         }
 
         /* Feedback Tab Styles */
@@ -1688,11 +1723,12 @@
                 }
             }
 
-            submitFeedback(event) {
+            async submitFeedback(event) {
                 event.preventDefault();
                 
                 const nameInput = document.getElementById('feedbackName');
                 const messageInput = document.getElementById('feedbackMessage');
+                const submitBtn = document.querySelector('.feedback-submit-btn');
                 
                 const name = nameInput.value.trim() || 'Anonim';
                 const message = messageInput.value.trim();
@@ -1702,6 +1738,63 @@
                     return;
                 }
 
+                // Butonu devre dışı bırak ve loading göster
+                submitBtn.disabled = true;
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '📤 Gönderiliyor...';
+
+                try {
+                    // Formspree'ye gönder
+                    const formData = new FormData();
+                    formData.append('name', name);
+                    formData.append('message', message);
+                    formData.append('timestamp', new Date().toLocaleString('tr-TR'));
+                    formData.append('userAgent', navigator.userAgent);
+                    formData.append('url', window.location.href);
+
+                    // Formspree endpoint'i config dosyasından al
+                    const FORMSPREE_ENDPOINT = CONFIG?.FORMSPREE_ENDPOINT || 'https://formspree.io/f/YOUR_FORM_ID';
+                    
+                    // Eğer henüz gerçek Form ID yoksa test modu
+                    if (FORMSPREE_ENDPOINT.includes('YOUR_FORM_ID')) {
+                        console.log('⚠️ Form ID henüz güncellenmemiş - Test modu aktif');
+                        // Test modu: Başarılı gibi davran ama aslında gönderme
+                        await new Promise(resolve => setTimeout(resolve, 1000)); // 1 saniye bekle
+                        
+                        const feedback = {
+                            id: Date.now(),
+                            name: name,
+                            message: message + '\n\n[TEST MODU - Gerçek gönderim için Form ID gerekli]',
+                            timestamp: new Date().toLocaleString('tr-TR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }),
+                            sent: false,
+                            testMode: true
+                        };
+
+                        this.feedbacks.unshift(feedback);
+                        this.saveFeedbacks();
+                        this.renderFeedbacks();
+                        this.closeFeedbackModal();
+                        
+                        this.showNotification('⚠️ Test modu: Form ID güncellenmeli!', 'error');
+                        return;
+                    }
+
+                    const response = await fetch(FORMSPREE_ENDPOINT, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Yerel olarak da sakla (kullanıcının kendi geri bildirimlerini görmesi için)
                 const feedback = {
                     id: Date.now(),
                     name: name,
@@ -1712,7 +1805,8 @@
                         day: '2-digit',
                         hour: '2-digit',
                         minute: '2-digit'
-                    })
+                            }),
+                            sent: true
                 };
 
                 this.feedbacks.unshift(feedback);
@@ -1720,7 +1814,40 @@
                 this.renderFeedbacks();
                 this.closeFeedbackModal();
                 
-                this.showNotification('🎉 Geri bildiriminiz için teşekkürler!', 'success');
+                        this.showNotification('🎉 Geri bildiriminiz başarıyla gönderildi!', 'success');
+                    } else {
+                        throw new Error('Gönderim başarısız');
+                    }
+                } catch (error) {
+                    console.error('Formspree gönderim hatası:', error);
+                    
+                    // Hata durumunda yerel olarak sakla
+                    const feedback = {
+                        id: Date.now(),
+                        name: name,
+                        message: message,
+                        timestamp: new Date().toLocaleString('tr-TR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                        sent: false,
+                        pending: true
+                    };
+
+                    this.feedbacks.unshift(feedback);
+                    this.saveFeedbacks();
+                    this.renderFeedbacks();
+                    this.closeFeedbackModal();
+                    
+                    this.showNotification('⚠️ Geri bildirim kaydedildi, internet bağlantınızı kontrol edin', 'error');
+                } finally {
+                    // Butonu tekrar etkinleştir
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
             }
 
             saveFeedbacks() {
@@ -1737,22 +1864,53 @@
                         <div class="empty-state">
                             <div class="empty-state-icon">💬</div>
                             <div class="empty-state-title">Henüz geri bildirim yok</div>
-                            <div class="empty-state-text">Kullanıcılardan gelen geri bildirimler burada görünecek.</div>
+                            <div class="empty-state-text">Geri bildirimleriniz burada görünecek.<br>Bu bölüm sadece kendi gönderdiğiniz geri bildirimleri gösterir.</div>
                         </div>
                     `;
                 } else {
-                    this.feedbackList.innerHTML = this.feedbacks.map((feedback, index) => `
-                        <div class="feedback-item" style="animation-delay: ${index * 0.1}s">
+                    this.feedbackList.innerHTML = this.feedbacks.map((feedback, index) => {
+                        let statusIcon = '';
+                        let statusClass = '';
+                        
+                        if (feedback.sent === true) {
+                            statusIcon = '✅ Gönderildi';
+                            statusClass = 'status-sent';
+                        } else if (feedback.testMode === true) {
+                            statusIcon = '🧪 Test Modu';
+                            statusClass = 'status-test';
+                        } else if (feedback.pending === true) {
+                            statusIcon = '⏳ Beklemede';
+                            statusClass = 'status-pending';
+                        } else {
+                            statusIcon = '📝 Yerel';
+                            statusClass = 'status-local';
+                        }
+                        
+                        return `
+                        <div class="feedback-item ${statusClass}" style="animation-delay: ${index * 0.1}s">
                             <div class="feedback-header">
                                 <div class="feedback-name">${this.escapeHtml(feedback.name)}</div>
-                                <div class="feedback-date">${feedback.timestamp}</div>
+                                <div class="feedback-status">${statusIcon}</div>
                             </div>
                             <div class="feedback-message">${this.escapeHtml(feedback.message)}</div>
+                            <div class="feedback-date">${feedback.timestamp}</div>
                         </div>
-                    `).join('');
+                    `;
+                    }).join('');
                 }
                 
-                this.feedbackStats.textContent = `Toplam: ${this.feedbacks.length} geri bildirim`;
+                const sentCount = this.feedbacks.filter(f => f.sent === true).length;
+                const pendingCount = this.feedbacks.filter(f => f.pending === true).length;
+                
+                let statsText = `Toplam: ${this.feedbacks.length} geri bildirim`;
+                if (sentCount > 0) {
+                    statsText += ` • Gönderilen: ${sentCount}`;
+                }
+                if (pendingCount > 0) {
+                    statsText += ` • Beklemede: ${pendingCount}`;
+                }
+                
+                this.feedbackStats.textContent = statsText;
             }
 
             switchTab(tabName) {
