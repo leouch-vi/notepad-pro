@@ -329,6 +329,235 @@
             gap: 10px;
         }
 
+        /* Feedback Button */
+        .feedback-btn {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease-out 1s both;
+        }
+
+        .feedback-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
+        /* Feedback Modal */
+        .feedback-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .feedback-modal-content {
+            background: rgba(45, 45, 48, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        .feedback-modal h3 {
+            color: #667eea;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .feedback-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feedback-input, .feedback-textarea {
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #f0f0f0;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feedback-input:focus, .feedback-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .feedback-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .feedback-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .feedback-submit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            flex: 1;
+        }
+
+        .feedback-submit-btn:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+        }
+
+        .feedback-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feedback-cancel-btn {
+            background: linear-gradient(45deg, #757575, #616161);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            flex: 1;
+        }
+
+        .feedback-cancel-btn:hover {
+            background: linear-gradient(45deg, #616161, #424242);
+            transform: translateY(-2px);
+        }
+
+        /* Feedback List Styles */
+        .feedback-list-section {
+            margin-top: 30px;
+            animation: fadeInUp 0.6s ease-out 0.5s both;
+        }
+
+        .feedback-item {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-item:hover {
+            border-color: rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .feedback-name {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .feedback-date {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .feedback-message {
+            color: #f0f0f0;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        /* Feedback Tab Styles */
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #888;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-btn:hover {
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         .status-indicator {
             background: rgba(76, 175, 80, 0.9);
             color: white;
@@ -428,6 +657,13 @@
             .main-layout {
                 grid-template-columns: 1fr;
                 gap: 25px;
+            }
+            
+            .feedback-btn {
+                top: 70px;
+                right: 10px;
+                padding: 10px 15px;
+                font-size: 12px;
             }
             
             .input-group {
@@ -927,14 +1163,22 @@
         <div class="status-indicator">🔒 Offline Çalışıyor</div>
     </div>
     
+    <button class="feedback-btn" onclick="app.openFeedbackModal()">💬 Geri Bildirim</button>
+    
     <div class="container">
         <div class="app-header">
             <h1>📝 NotePad Pro</h1>
             <div class="app-subtitle">Modern, güvenli ve offline not alma deneyimi</div>
         </div>
         
-        <div class="main-layout">
-            <div class="left-panel">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="app.switchTab('notes')">📝 Notlarım</button>
+            <button class="tab-btn" onclick="app.switchTab('feedback')">💬 Geri Bildirimler</button>
+        </div>
+
+        <div class="tab-content active" id="notesTab">
+            <div class="main-layout">
+                <div class="left-panel">
                 <div class="glass-card search-filter-section">
                     <div class="section-title">🔍 Arama & Filtre</div>
                     <div class="search-filter-row">
@@ -987,6 +1231,21 @@
                 </div>
             </div>
         </div>
+        </div>
+
+        <div class="tab-content" id="feedbackTab">
+            <div class="glass-card feedback-list-section">
+                <div class="section-title">💬 Geri Bildirimler</div>
+                <div class="stats" id="feedbackStats">Toplam: 0 geri bildirim</div>
+                <div id="feedbackList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💬</div>
+                        <div class="empty-state-title">Henüz geri bildirim yok</div>
+                        <div class="empty-state-text">Kullanıcılardan gelen geri bildirimler burada görünecek.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -994,6 +1253,9 @@
             constructor() {
                 this.notlar = JSON.parse(localStorage.getItem('notlar')) || [];
                 this.filteredNotlar = [];
+                this.feedbacks = JSON.parse(localStorage.getItem('feedbacks')) || [];
+                this.currentTab = 'notes';
+                
                 this.noteInput = document.getElementById('noteInput');
                 this.categorySelect = document.getElementById('categorySelect');
                 this.tagsInput = document.getElementById('tagsInput');
@@ -1004,10 +1266,13 @@
                 this.notesList = document.getElementById('notesList');
                 this.noteStats = document.getElementById('noteStats');
                 this.searchResults = document.getElementById('searchResults');
+                this.feedbackList = document.getElementById('feedbackList');
+                this.feedbackStats = document.getElementById('feedbackStats');
                 
                 this.initEventListeners();
                 this.applyFilters();
                 this.updateStats();
+                this.renderFeedbacks();
                 this.focusInput();
             }
 
@@ -1376,6 +1641,136 @@
                     'Hobiler': '🎨'
                 };
                 return icons[category] || '📄';
+            }
+
+            // Feedback System Methods
+            openFeedbackModal() {
+                const modal = document.createElement('div');
+                modal.className = 'feedback-modal';
+                modal.innerHTML = `
+                    <div class="feedback-modal-content">
+                        <h3>💬 Geri Bildirim Gönder</h3>
+                        <form class="feedback-form" onsubmit="app.submitFeedback(event)">
+                            <input type="text" id="feedbackName" class="feedback-input" placeholder="İsminiz (isteğe bağlı)">
+                            <textarea id="feedbackMessage" class="feedback-textarea" placeholder="Geri bildiriminizi yazın... (zorunlu)" required></textarea>
+                            <div class="feedback-actions">
+                                <button type="submit" class="feedback-submit-btn">📤 Gönder</button>
+                                <button type="button" class="feedback-cancel-btn" onclick="app.closeFeedbackModal()">❌ İptal</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+                
+                // Textarea'ya fokus ver
+                setTimeout(() => {
+                    document.getElementById('feedbackMessage').focus();
+                }, 100);
+
+                // ESC tuşu ile kapat
+                const handleKeyDown = (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeFeedbackModal();
+                        document.removeEventListener('keydown', handleKeyDown);
+                    }
+                };
+                document.addEventListener('keydown', handleKeyDown);
+            }
+
+            closeFeedbackModal() {
+                const modal = document.querySelector('.feedback-modal');
+                if (modal) {
+                    modal.style.animation = 'fadeOut 0.3s ease-in';
+                    setTimeout(() => {
+                        document.body.removeChild(modal);
+                    }, 300);
+                }
+            }
+
+            submitFeedback(event) {
+                event.preventDefault();
+                
+                const nameInput = document.getElementById('feedbackName');
+                const messageInput = document.getElementById('feedbackMessage');
+                
+                const name = nameInput.value.trim() || 'Anonim';
+                const message = messageInput.value.trim();
+                
+                if (!message) {
+                    this.showNotification('Lütfen geri bildirim mesajınızı yazın!', 'error');
+                    return;
+                }
+
+                const feedback = {
+                    id: Date.now(),
+                    name: name,
+                    message: message,
+                    timestamp: new Date().toLocaleString('tr-TR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                };
+
+                this.feedbacks.unshift(feedback);
+                this.saveFeedbacks();
+                this.renderFeedbacks();
+                this.closeFeedbackModal();
+                
+                this.showNotification('🎉 Geri bildiriminiz için teşekkürler!', 'success');
+            }
+
+            saveFeedbacks() {
+                try {
+                    localStorage.setItem('feedbacks', JSON.stringify(this.feedbacks));
+                } catch (error) {
+                    this.showNotification('Geri bildirim kaydedilemedi!', 'error');
+                }
+            }
+
+            renderFeedbacks() {
+                if (this.feedbacks.length === 0) {
+                    this.feedbackList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💬</div>
+                            <div class="empty-state-title">Henüz geri bildirim yok</div>
+                            <div class="empty-state-text">Kullanıcılardan gelen geri bildirimler burada görünecek.</div>
+                        </div>
+                    `;
+                } else {
+                    this.feedbackList.innerHTML = this.feedbacks.map((feedback, index) => `
+                        <div class="feedback-item" style="animation-delay: ${index * 0.1}s">
+                            <div class="feedback-header">
+                                <div class="feedback-name">${this.escapeHtml(feedback.name)}</div>
+                                <div class="feedback-date">${feedback.timestamp}</div>
+                            </div>
+                            <div class="feedback-message">${this.escapeHtml(feedback.message)}</div>
+                        </div>
+                    `).join('');
+                }
+                
+                this.feedbackStats.textContent = `Toplam: ${this.feedbacks.length} geri bildirim`;
+            }
+
+            switchTab(tabName) {
+                // Tab buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                // Tab contents
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                if (tabName === 'notes') {
+                    document.getElementById('notesTab').classList.add('active');
+                    this.currentTab = 'notes';
+                } else if (tabName === 'feedback') {
+                    document.getElementById('feedbackTab').classList.add('active');
+                    this.currentTab = 'feedback';
+                    this.renderFeedbacks();
+                }
             }
 
             escapeHtml(text) {
