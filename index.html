@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 Not Uygulaması</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📝%3C/text%3E%3C/svg%3E">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: #f0f0f0;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .app-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(79, 195, 247, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(79, 195, 247, 0.05) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4fc3f7, #81c784, #4fc3f7);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite, fadeInDown 1s ease-out;
+            letter-spacing: -1px;
+        }
+
+        .app-subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .add-note-section {
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .section-title {
+            color: #4fc3f7;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(45deg, #4fc3f7, #81c784);
+            border-radius: 2px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        #noteInput {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #f0f0f0;
+            font-size: 16px;
+            min-height: 120px;
+            resize: vertical;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            backdrop-filter: blur(10px);
+        }
+
+        #noteInput:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 
+                0 0 20px rgba(79, 195, 247, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        #noteInput::placeholder {
+            color: #888;
+        }
+
+        #addBtn {
+            padding: 20px 35px;
+            background: linear-gradient(135deg, #4fc3f7, #29b6f6, #4fc3f7);
+            background-size: 200% 200%;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            height: fit-content;
+            font-family: inherit;
+            box-shadow: 0 8px 25px rgba(79, 195, 247, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #addBtn:hover {
+            background-position: 100% 0;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(79, 195, 247, 0.5);
+        }
+
+        #addBtn:active {
+            transform: translateY(0);
+        }
+
+        #addBtn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        #addBtn:hover::before {
+            left: 100%;
+        }
+
+        #addBtn:active {
+            transform: translateY(0);
+        }
+
+        .notes-section {
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .notes-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .notes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+
+        .notes-header {
+            text-align: center;
+            color: #4fc3f7;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        .note-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 25px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            animation: slideInUp 0.5s ease-out;
+            overflow: hidden;
+        }
+
+        .note-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #4fc3f7, #81c784, #4fc3f7);
+            background-size: 200% 100%;
+            animation: gradientFlow 3s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .note-item:hover {
+            transform: translateY(-8px);
+            border-color: rgba(79, 195, 247, 0.2);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(79, 195, 247, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .note-content {
+            line-height: 1.6;
+            word-wrap: break-word;
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+        }
+
+        .note-time {
+            font-size: 0.9rem;
+            color: #888;
+            text-align: right;
+        }
+
+        .note-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .edit-btn, .delete-btn {
+            background: #4fc3f7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .edit-btn:hover {
+            background: #29b6f6;
+            transform: scale(1.1);
+        }
+
+        .delete-btn {
+            background: #f44336;
+        }
+
+        .delete-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .app-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .notification {
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideInRight 0.3s ease-out;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification.success {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+        }
+
+        .notification.error {
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+        }
+
+        .notification.info {
+            background: rgba(33, 150, 243, 0.9);
+            color: white;
+        }
+
+        .stats {
+            text-align: center;
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+                @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-filter-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .search-filter-row > * {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .note-form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .edit-form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .note-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .note-actions {
+                align-self: flex-end;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+
+            .app-status {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .status-indicator, .notification {
+                font-size: 11px;
+                padding: 8px 12px;
+            }
+            
+            .glass-card {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            
+            .note-item {
+                padding: 20px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(45, 45, 48, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(79, 195, 247, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(79, 195, 247, 0.7);
+        }
+
+        /* Search and Filter Section */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 450px 1fr;
+                gap: 40px;
+            }
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .right-panel {
+            min-height: 400px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(79, 195, 247, 0.2);
+            box-shadow: 
+                0 25px 60px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(79, 195, 247, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .search-filter-section {
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .search-filter-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            background: #2d2d30;
+            color: #e0e0e0;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 10px rgba(79, 195, 247, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: #888;
+        }
+
+        .category-filter {
+            padding: 12px 15px;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            background: #2d2d30;
+            color: #e0e0e0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            min-width: 140px;
+        }
+
+        .category-filter:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 10px rgba(79, 195, 247, 0.3);
+        }
+
+        .clear-filters-btn {
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #757575, #616161);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .clear-filters-btn:hover {
+            background: linear-gradient(45deg, #616161, #424242);
+            transform: translateY(-1px);
+        }
+
+        .search-results-info {
+            margin-top: 15px;
+            color: #888;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* Enhanced Add Note Section */
+        .note-form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .category-select, .tags-input {
+            padding: 12px 15px;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            background: #2d2d30;
+            color: #e0e0e0;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .category-select {
+            min-width: 140px;
+            cursor: pointer;
+        }
+
+        .tags-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .category-select:focus, .tags-input:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 10px rgba(79, 195, 247, 0.3);
+        }
+
+        .tags-input::placeholder {
+            color: #888;
+        }
+
+        /* Enhanced Note Item */
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .note-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .note-category {
+            background: linear-gradient(45deg, #4fc3f7, #29b6f6);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .note-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 5px 0;
+        }
+
+        .note-tag {
+            background: rgba(79, 195, 247, 0.2);
+            color: #4fc3f7;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        .note-content {
+            margin: 10px 0;
+        }
+
+        /* No Results Message */
+        .no-results {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        /* Edit Modal */
+        .edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .edit-modal-content {
+            background: rgba(45, 45, 48, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 700px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        .edit-form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .edit-category-select, .edit-tags-input {
+            padding: 12px 15px;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            background: #2d2d30;
+            color: #e0e0e0;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .edit-category-select {
+            min-width: 140px;
+        }
+
+        .edit-tags-input {
+            flex: 1;
+        }
+
+        .edit-category-select:focus, .edit-tags-input:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 10px rgba(79, 195, 247, 0.3);
+        }
+
+        .edit-modal h3 {
+            color: #4fc3f7;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .edit-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #404040;
+            border-radius: 10px;
+            background: #2d2d30;
+            color: #e0e0e0;
+            font-size: 16px;
+            resize: vertical;
+            font-family: inherit;
+            margin-bottom: 20px;
+        }
+
+        .edit-textarea:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 15px rgba(79, 195, 247, 0.3);
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .save-btn, .cancel-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .save-btn {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(45deg, #45a049, #3d8b40);
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background: linear-gradient(45deg, #757575, #616161);
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: linear-gradient(45deg, #616161, #424242);
+            transform: translateY(-2px);
+        }
+
+        /* Delete Confirmation Modal */
+        .delete-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .delete-modal-content {
+            background: rgba(45, 45, 48, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        .delete-modal h3 {
+            color: #f44336;
+            margin-bottom: 15px;
+        }
+
+        .delete-modal p {
+            color: #e0e0e0;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .delete-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .confirm-delete-btn {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .confirm-delete-btn:hover {
+            background: linear-gradient(45deg, #d32f2f, #b71c1c);
+            transform: translateY(-2px);
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-background"></div>
+    
+    <div class="app-status">
+        <div class="status-indicator">🔒 Offline Çalışıyor</div>
+    </div>
+    
+    <div class="container">
+        <div class="app-header">
+            <h1>📝 NotePad Pro</h1>
+            <div class="app-subtitle">Modern, güvenli ve offline not alma deneyimi</div>
+        </div>
+        
+        <div class="main-layout">
+            <div class="left-panel">
+                <div class="glass-card search-filter-section">
+                    <div class="section-title">🔍 Arama & Filtre</div>
+                    <div class="search-filter-row">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Notlarda ara... (içerik, kategori, etiket)">
+                        <select id="categoryFilter" class="category-filter">
+                            <option value="">Tüm Kategoriler</option>
+                            <option value="Kişisel">📝 Kişisel</option>
+                            <option value="İş">💼 İş</option>
+                            <option value="Okul">🎓 Okul</option>
+                            <option value="Alışveriş">🛒 Alışveriş</option>
+                            <option value="Sağlık">⚕️ Sağlık</option>
+                            <option value="Hobiler">🎨 Hobiler</option>
+                        </select>
+                        <button id="clearFiltersBtn" class="clear-filters-btn">Temizle</button>
+                    </div>
+                    <div id="searchResults" class="search-results-info"></div>
+                </div>
+
+                <div class="glass-card add-note-section">
+                    <div class="section-title">📝 Yeni Not</div>
+                    <div class="note-form-row">
+                        <select id="categorySelect" class="category-select">
+                            <option value="Kişisel">📝 Kişisel</option>
+                            <option value="İş">💼 İş</option>
+                            <option value="Okul">🎓 Okul</option>
+                            <option value="Alışveriş">🛒 Alışveriş</option>
+                            <option value="Sağlık">⚕️ Sağlık</option>
+                            <option value="Hobiler">🎨 Hobiler</option>
+                        </select>
+                        <input type="text" id="tagsInput" class="tags-input" placeholder="🏷️ Etiketler (virgül ile ayır)">
+                    </div>
+                    <div class="input-group">
+                        <textarea id="noteInput" placeholder="Notunuzu buraya yazın...\n\n💡 İpucu: Ctrl+Enter ile hızlı ekleme"></textarea>
+                        <button id="addBtn">Ekle</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="glass-card notes-section">
+                    <div class="section-title">📋 Notlarım</div>
+                    <div class="stats" id="noteStats">Toplam: 0 not</div>
+                    <div class="notes-grid" id="notesList">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📝</div>
+                            <div class="empty-state-title">Henüz not yok</div>
+                            <div class="empty-state-text">İlk notunuzu oluşturmak için sol paneli kullanın.<br>Notlarınız burada görünecek.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class NotUygulamasi {
+            constructor() {
+                this.notlar = JSON.parse(localStorage.getItem('notlar')) || [];
+                this.filteredNotlar = [];
+                this.noteInput = document.getElementById('noteInput');
+                this.categorySelect = document.getElementById('categorySelect');
+                this.tagsInput = document.getElementById('tagsInput');
+                this.addBtn = document.getElementById('addBtn');
+                this.searchInput = document.getElementById('searchInput');
+                this.categoryFilter = document.getElementById('categoryFilter');
+                this.clearFiltersBtn = document.getElementById('clearFiltersBtn');
+                this.notesList = document.getElementById('notesList');
+                this.noteStats = document.getElementById('noteStats');
+                this.searchResults = document.getElementById('searchResults');
+                
+                this.initEventListeners();
+                this.applyFilters();
+                this.updateStats();
+                this.focusInput();
+            }
+
+            initEventListeners() {
+                this.addBtn.addEventListener('click', () => this.addNote());
+                this.noteInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                        this.addNote();
+                    }
+                });
+
+                // Search and filter events
+                this.searchInput.addEventListener('input', () => this.applyFilters());
+                this.categoryFilter.addEventListener('change', () => this.applyFilters());
+                this.clearFiltersBtn.addEventListener('click', () => this.clearFilters());
+
+                // Auto-save özelliği
+                this.noteInput.addEventListener('input', () => {
+                    localStorage.setItem('draft', this.noteInput.value);
+                });
+                this.tagsInput.addEventListener('input', () => {
+                    localStorage.setItem('draftTags', this.tagsInput.value);
+                });
+
+                // Sayfa yüklendiğinde taslağı geri yükle
+                const draft = localStorage.getItem('draft');
+                const draftTags = localStorage.getItem('draftTags');
+                if (draft && draft.trim()) {
+                    this.noteInput.value = draft;
+                }
+                if (draftTags && draftTags.trim()) {
+                    this.tagsInput.value = draftTags;
+                }
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'n') {
+                        e.preventDefault();
+                        this.focusInput();
+                    }
+                    if (e.ctrlKey && e.key === 'f') {
+                        e.preventDefault();
+                        this.searchInput.focus();
+                    }
+                });
+            }
+
+            addNote() {
+                const content = this.noteInput.value.trim();
+                const category = this.categorySelect.value;
+                const tagsText = this.tagsInput.value.trim();
+                
+                if (!content) {
+                    this.showNotification('Lütfen bir not yazın!', 'error');
+                    return;
+                }
+
+                const tags = tagsText ? tagsText.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+
+                const note = {
+                    id: Date.now(),
+                    content: content,
+                    category: category,
+                    tags: tags,
+                    timestamp: new Date().toLocaleString('tr-TR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                };
+
+                this.notlar.unshift(note);
+                this.saveNotes();
+                this.applyFilters();
+                this.updateStats();
+                this.noteInput.value = '';
+                this.tagsInput.value = '';
+                this.noteInput.focus();
+                localStorage.removeItem('draft');
+                localStorage.removeItem('draftTags');
+                this.showNotification('Not başarıyla eklendi!', 'success');
+            }
+
+            editNote(id) {
+                const note = this.notlar.find(n => n.id === id);
+                if (!note) return;
+
+                // Edit modal oluştur
+                const modal = document.createElement('div');
+                modal.className = 'edit-modal';
+                modal.innerHTML = `
+                    <div class="edit-modal-content">
+                        <h3>📝 Notu Düzenle</h3>
+                        <div class="edit-form-row">
+                            <select class="edit-category-select" id="editCategorySelect">
+                                <option value="Kişisel" ${note.category === 'Kişisel' ? 'selected' : ''}>📝 Kişisel</option>
+                                <option value="İş" ${note.category === 'İş' ? 'selected' : ''}>💼 İş</option>
+                                <option value="Okul" ${note.category === 'Okul' ? 'selected' : ''}>🎓 Okul</option>
+                                <option value="Alışveriş" ${note.category === 'Alışveriş' ? 'selected' : ''}>🛒 Alışveriş</option>
+                                <option value="Sağlık" ${note.category === 'Sağlık' ? 'selected' : ''}>⚕️ Sağlık</option>
+                                <option value="Hobiler" ${note.category === 'Hobiler' ? 'selected' : ''}>🎨 Hobiler</option>
+                            </select>
+                            <input type="text" class="edit-tags-input" id="editTagsInput" placeholder="🏷️ Etiketler" value="${note.tags ? note.tags.join(', ') : ''}">
+                        </div>
+                        <textarea class="edit-textarea" id="editTextarea">${this.escapeHtml(note.content)}</textarea>
+                        <div class="edit-actions">
+                            <button class="save-btn" onclick="app.saveEdit(${id})">💾 Kaydet</button>
+                            <button class="cancel-btn" onclick="app.cancelEdit()">❌ İptal</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+                
+                // Textarea'ya fokus ver ve metni seç
+                setTimeout(() => {
+                    const textarea = document.getElementById('editTextarea');
+                    textarea.focus();
+                    textarea.setSelectionRange(0, textarea.value.length);
+                }, 100);
+
+                // ESC tuşu ile kapat
+                const handleKeyDown = (e) => {
+                    if (e.key === 'Escape') {
+                        this.cancelEdit();
+                        document.removeEventListener('keydown', handleKeyDown);
+                    }
+                };
+                document.addEventListener('keydown', handleKeyDown);
+            }
+
+            saveEdit(id) {
+                const textarea = document.getElementById('editTextarea');
+                const categorySelect = document.getElementById('editCategorySelect');
+                const tagsInput = document.getElementById('editTagsInput');
+                
+                const newContent = textarea.value.trim();
+                const newCategory = categorySelect.value;
+                const newTagsText = tagsInput.value.trim();
+                
+                if (!newContent) {
+                    this.showNotification('Not içeriği boş olamaz!', 'error');
+                    return;
+                }
+
+                const newTags = newTagsText ? newTagsText.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+
+                const noteIndex = this.notlar.findIndex(n => n.id === id);
+                if (noteIndex !== -1) {
+                    this.notlar[noteIndex].content = newContent;
+                    this.notlar[noteIndex].category = newCategory;
+                    this.notlar[noteIndex].tags = newTags;
+                    this.notlar[noteIndex].timestamp = new Date().toLocaleString('tr-TR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) + ' (düzenlendi)';
+                    
+                    this.saveNotes();
+                    this.applyFilters();
+                    this.cancelEdit();
+                    this.showNotification('Not başarıyla güncellendi!', 'success');
+                }
+            }
+
+            cancelEdit() {
+                const modal = document.querySelector('.edit-modal');
+                if (modal) {
+                    modal.style.animation = 'fadeOut 0.3s ease-in';
+                    setTimeout(() => {
+                        document.body.removeChild(modal);
+                    }, 300);
+                }
+            }
+
+            showDeleteConfirm(id) {
+                const note = this.notlar.find(n => n.id === id);
+                if (!note) return;
+
+                const modal = document.createElement('div');
+                modal.className = 'delete-modal';
+                modal.innerHTML = `
+                    <div class="delete-modal-content">
+                        <h3>🗑️ Notu Sil</h3>
+                        <p>Bu notu silmek istediğinizden emin misiniz?</p>
+                        <div class="note-preview" style="
+                            background: rgba(60, 60, 60, 0.8);
+                            padding: 15px;
+                            border-radius: 8px;
+                            margin: 15px 0;
+                            border-left: 3px solid #f44336;
+                            max-height: 100px;
+                            overflow-y: auto;
+                            text-align: left;
+                            font-style: italic;
+                            color: #ccc;
+                        ">${this.escapeHtml(note.content.length > 100 ? note.content.substring(0, 100) + '...' : note.content)}</div>
+                        <p style="font-size: 0.9em; color: #888;">⚠️ Bu işlem geri alınamaz!</p>
+                        <div class="delete-actions">
+                            <button class="confirm-delete-btn" onclick="app.confirmDelete(${id})">✅ Evet, Sil</button>
+                            <button class="cancel-btn" onclick="app.cancelDelete()">❌ İptal</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // ESC tuşu ile kapat
+                const handleKeyDown = (e) => {
+                    if (e.key === 'Escape') {
+                        this.cancelDelete();
+                        document.removeEventListener('keydown', handleKeyDown);
+                    }
+                };
+                document.addEventListener('keydown', handleKeyDown);
+            }
+
+            confirmDelete(id) {
+                this.notlar = this.notlar.filter(note => note.id !== id);
+                this.saveNotes();
+                this.applyFilters();
+                this.updateStats();
+                this.cancelDelete();
+                this.showNotification('Not başarıyla silindi.', 'info');
+            }
+
+            cancelDelete() {
+                const modal = document.querySelector('.delete-modal');
+                if (modal) {
+                    modal.style.animation = 'fadeOut 0.3s ease-in';
+                    setTimeout(() => {
+                        document.body.removeChild(modal);
+                    }, 300);
+                }
+            }
+
+            saveNotes() {
+                try {
+                    localStorage.setItem('notlar', JSON.stringify(this.notlar));
+                } catch (error) {
+                    this.showNotification('Not kaydedilemedi: Depolama alanı dolu!', 'error');
+                }
+            }
+
+            renderNotes() {
+                if (this.notlar.length === 0) {
+                    this.notesList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📝</div>
+                            <div class="empty-state-title">Henüz not yok</div>
+                            <div class="empty-state-text">İlk notunuzu oluşturmak için sol paneli kullanın.<br>Notlarınız burada görünecek.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (this.filteredNotlar.length === 0) {
+                    this.notesList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔍</div>
+                            <div class="empty-state-title">Sonuç bulunamadı</div>
+                            <div class="empty-state-text">Arama kriterlerinize uygun not yok.<br>Farklı kelimeler deneyin veya filtreleri temizleyin.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.notesList.innerHTML = this.filteredNotlar.map((note, index) => `
+                    <div class="note-item" style="animation-delay: ${index * 0.1}s">
+                        <div class="note-header">
+                            <div class="note-meta">
+                                <div class="note-category">${this.getCategoryIcon(note.category)} ${note.category || 'Kategorisiz'}</div>
+                                ${note.tags && note.tags.length > 0 ? `
+                                    <div class="note-tags">
+                                        ${note.tags.map(tag => `<span class="note-tag">#${tag}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="note-actions">
+                                <button class="edit-btn" onclick="app.editNote(${note.id})" title="Notu düzenle">✏️</button>
+                                <button class="delete-btn" onclick="app.showDeleteConfirm(${note.id})" title="Notu sil">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="note-content">${this.escapeHtml(note.content)}</div>
+                        <div class="note-time">${note.timestamp}</div>
+                    </div>
+                `).join('');
+            }
+
+            updateStats() {
+                const totalCount = this.notlar.length;
+                const filteredCount = this.filteredNotlar.length;
+                
+                if (totalCount === filteredCount) {
+                    this.noteStats.textContent = `Toplam: ${totalCount} not`;
+                } else {
+                    this.noteStats.textContent = `Gösterilen: ${filteredCount} / ${totalCount} not`;
+                }
+            }
+
+            applyFilters() {
+                const searchTerm = this.searchInput.value.toLowerCase().trim();
+                const selectedCategory = this.categoryFilter.value;
+
+                this.filteredNotlar = this.notlar.filter(note => {
+                    // Kategori filtresi
+                    const categoryMatch = !selectedCategory || note.category === selectedCategory;
+                    
+                    // Arama filtresi
+                    let searchMatch = true;
+                    if (searchTerm) {
+                        const contentMatch = note.content.toLowerCase().includes(searchTerm);
+                        const categoryMatch = (note.category || '').toLowerCase().includes(searchTerm);
+                        const tagsMatch = note.tags && note.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                        
+                        searchMatch = contentMatch || categoryMatch || tagsMatch;
+                    }
+                    
+                    return categoryMatch && searchMatch;
+                });
+
+                this.renderNotes();
+                this.updateStats();
+                this.updateSearchResults();
+            }
+
+            updateSearchResults() {
+                const searchTerm = this.searchInput.value.trim();
+                const selectedCategory = this.categoryFilter.value;
+                
+                if (!searchTerm && !selectedCategory) {
+                    this.searchResults.textContent = '';
+                    return;
+                }
+
+                let message = '';
+                if (searchTerm && selectedCategory) {
+                    message = `"${searchTerm}" araması, ${selectedCategory} kategorisinde`;
+                } else if (searchTerm) {
+                    message = `"${searchTerm}" araması için`;
+                } else if (selectedCategory) {
+                    message = `${selectedCategory} kategorisi için`;
+                }
+
+                this.searchResults.textContent = `${message} ${this.filteredNotlar.length} sonuç bulundu`;
+            }
+
+            clearFilters() {
+                this.searchInput.value = '';
+                this.categoryFilter.value = '';
+                this.applyFilters();
+                this.showNotification('Filtreler temizlendi', 'info');
+            }
+
+            getCategoryIcon(category) {
+                const icons = {
+                    'Kişisel': '📝',
+                    'İş': '💼',
+                    'Okul': '🎓',
+                    'Alışveriş': '🛒',
+                    'Sağlık': '⚕️',
+                    'Hobiler': '🎨'
+                };
+                return icons[category] || '📄';
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            focusInput() {
+                this.noteInput.focus();
+                this.noteInput.setSelectionRange(this.noteInput.value.length, this.noteInput.value.length);
+            }
+
+            showNotification(message, type = 'info') {
+                const appStatus = document.querySelector('.app-status');
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                
+                appStatus.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease-in';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            appStatus.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+
+            // Export/Import özelliği
+            exportNotes() {
+                const dataStr = JSON.stringify(this.notlar, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `notlarim_${new Date().toISOString().slice(0, 10)}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Uygulamayı başlat
+        const app = new NotUygulamasi();
+
+        // Sayfa yüklendiğinde input'a odaklan
+        window.addEventListener('load', () => {
+            app.focusInput();
+        });
+
+        // Sayfa kapatılırken onay iste (eğer yazılmakta olan not varsa)
+        window.addEventListener('beforeunload', (e) => {
+            const draft = localStorage.getItem('draft');
+            if (draft && draft.trim()) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Additional CSS for animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
